@@ -2,34 +2,18 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
-    <!-- SEO 优化 -->
-    <title>交互式太阳系模型 - 探索行星轨道运行的奥秘</title>
-    <meta name="description" content="免费在线交互式太阳系模拟器，拖动时间轴观察8大行星轨道运行，支持手机微信访问">
-    <meta name="keywords" content="太阳系模型,行星轨道,天文模拟,在线天文,太阳系模拟器">
-    <meta name="author" content="Solar System Explorer">
+    <title>馃寣 浜や簰寮忓お闃崇郴妯″瀷</title>
+    <meta name="description" content="鍏嶈垂鍦ㄧ嚎浜や簰寮忓お闃崇郴妯℃嫙鍣紝鎷栧姩鏃堕棿杞磋瀵?澶ц鏄熻建閬撹繍琛?>
     
-    <!-- Open Graph / 微信分享 -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="🌌 交互式太阳系模型">
-    <meta property="og:description" content="免费在线太阳系模拟器，拖动时间轴探索8大行星运行轨迹！">
+    <meta property="og:title" content="馃寣 浜や簰寮忓お闃崇郴妯″瀷">
+    <meta property="og:description" content="鍏嶈垂鍦ㄧ嚎澶槼绯绘ā鎷熷櫒锛屾嫋鍔ㄦ椂闂磋酱鎺㈢储8澶ц鏄熻繍琛岃建杩癸紒">
     <meta property="og:image" content="https://images.unsplash.com/photo-1614730341194-75c607400070?w=800">
-    <meta property="og:url" content="https://你的用户名.github.io/solar-system/">
     
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="🌌 交互式太阳系模型">
-    <meta name="twitter:description" content="免费在线太阳系模拟器">
-    
-    <!-- 主题色 -->
     <meta name="theme-color" content="#0a0a2e">
-    <meta name="msapplication-TileColor" content="#0a0a2e">
-    
-    <!-- 预加载关键资源 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     
     <style>
         * {
@@ -38,183 +22,216 @@
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         html, body {
             height: 100%;
             overflow: hidden;
-            background: linear-gradient(135deg, #050510 0%, #0a0a2e 50%, #050518 100%);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #050510;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
         }
 
         .container {
             display: flex;
             flex-direction: column;
             height: 100vh;
+            height: 100dvh; /* 鍔ㄦ€佽鍙ｉ珮搴?*/
             position: relative;
+            overflow: hidden;
         }
 
+        /* 澶撮儴 */
         .header {
-            padding: 10px 15px;
+            padding: 8px 12px;
             text-align: center;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(100, 150, 255, 0.1);
+            flex-shrink: 0;
         }
 
         h1 {
-            font-size: 18px;
+            font-size: 16px;
             background: linear-gradient(90deg, #ffd700, #ff8c00, #ffd700);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: none;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
 
         .subtitle {
-            font-size: 12px;
+            font-size: 11px;
             color: #7ec8e3;
-            margin-top: 3px;
+            margin-top: 2px;
             opacity: 0.8;
         }
 
+        /* 鐢诲竷鍖哄煙 */
         .canvas-wrapper {
             flex: 1;
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 5px;
+            overflow: hidden;
             min-height: 0;
         }
 
         canvas {
+            display: block;
             max-width: 100%;
             max-height: 100%;
-            border-radius: 8px;
         }
 
-        /* 行星图例 */
+        /* 琛屾槦鍥句緥 - 鎶樺彔鎸夐挳 */
         .legend-toggle {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+            top: 8px;
+            left: 8px;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 6px 10px;
+            border-radius: 15px;
+            font-size: 11px;
             color: #7ec8e3;
             border: 1px solid rgba(100, 150, 255, 0.3);
             cursor: pointer;
             z-index: 10;
             backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            transition: all 0.3s;
-        }
-
-        .legend-toggle:hover {
-            background: rgba(100, 150, 255, 0.2);
         }
 
         .legend-panel {
             position: absolute;
-            top: 45px;
-            left: 10px;
+            top: 38px;
+            left: 8px;
             background: rgba(0, 0, 0, 0.9);
-            padding: 12px;
+            padding: 10px 12px;
             border-radius: 10px;
             font-size: 11px;
             border: 1px solid rgba(100, 150, 255, 0.3);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             z-index: 10;
             display: none;
-            max-height: 60vh;
+            max-height: 50vh;
             overflow-y: auto;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            min-width: 140px;
         }
 
         .legend-panel.show {
             display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin: 6px 0;
-            white-space: nowrap;
-            cursor: pointer;
+            gap: 6px;
+            margin: 4px 0;
             padding: 3px 5px;
-            border-radius: 5px;
-            transition: background 0.2s;
-        }
-
-        .legend-item:hover {
-            background: rgba(100, 150, 255, 0.1);
+            border-radius: 4px;
         }
 
         .legend-color {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             flex-shrink: 0;
         }
 
         .legend-text {
             color: #ccc;
+            font-size: 11px;
         }
 
         .legend-period {
             color: #666;
-            font-size: 10px;
+            font-size: 9px;
             margin-left: auto;
         }
 
-        /* 控制面板 */
+        /* 鍒嗕韩鎸夐挳 */
+        .share-container {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            z-index: 50;
+        }
+
+        .share-btn {
+            background: linear-gradient(145deg, #07C160, #06AD56);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(7, 193, 96, 0.3);
+        }
+
+        .share-tip {
+            position: absolute;
+            top: 38px;
+            right: 0;
+            background: rgba(255, 152, 0, 0.95);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            display: none;
+            white-space: nowrap;
+        }
+
+        .share-tip::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            right: 20px;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 6px solid rgba(255, 152, 0, 0.95);
+        }
+
+        /* 鎺у埗闈㈡澘 */
         .controls {
             background: rgba(10, 10, 30, 0.95);
-            padding: 12px 15px;
-            border-top: 1px solid rgba(100, 150, 255, 0.2);
+            padding: 10px 12px;
+            border-top: 1px solid rgba(100, 150, 255, 0.15);
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            flex-shrink: 0;
         }
 
         .time-display {
             text-align: center;
-            font-size: 14px;
-            margin-bottom: 10px;
+            font-size: 12px;
+            margin-bottom: 8px;
             color: #7ec8e3;
         }
 
         .time-display .value {
             color: #ffd700;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
         }
 
+        /* 婊戝潡 */
         .slider-container {
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .slider-label {
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
+            font-size: 10px;
             color: #888;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         input[type="range"] {
             width: 100%;
-            height: 36px;
+            height: 32px;
             background: transparent;
             -webkit-appearance: none;
             cursor: pointer;
@@ -222,65 +239,57 @@
 
         input[type="range"]::-webkit-slider-runnable-track {
             width: 100%;
-            height: 8px;
+            height: 6px;
             background: linear-gradient(90deg, #1a1a4a, #3a3a7a);
-            border-radius: 4px;
+            border-radius: 3px;
         }
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 28px;
-            height: 28px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             background: linear-gradient(145deg, #ffd700, #ff8c00);
-            margin-top: -10px;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            margin-top: -8px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
             border: 2px solid #fff;
-            transition: transform 0.2s;
-        }
-
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.1);
         }
 
         input[type="range"]::-moz-range-track {
             width: 100%;
-            height: 8px;
+            height: 6px;
             background: linear-gradient(90deg, #1a1a4a, #3a3a7a);
-            border-radius: 4px;
+            border-radius: 3px;
         }
 
         input[type="range"]::-moz-range-thumb {
-            width: 28px;
-            height: 28px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             background: linear-gradient(145deg, #ffd700, #ff8c00);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
             border: 2px solid #fff;
             cursor: pointer;
         }
 
+        /* 鎸夐挳缁?*/
         .button-group {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 12px;
+            gap: 8px;
+            margin-bottom: 10px;
         }
 
         .btn {
             flex: 1;
-            max-width: 100px;
-            padding: 12px 15px;
-            font-size: 14px;
+            max-width: 80px;
+            padding: 10px;
+            font-size: 12px;
             border: none;
-            border-radius: 25px;
+            border-radius: 20px;
             cursor: pointer;
-            transition: all 0.2s;
             font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
+            transition: transform 0.1s;
         }
 
         .btn:active {
@@ -292,17 +301,9 @@
             color: white;
         }
 
-        .btn-play:hover {
-            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
-        }
-
         .btn-pause {
             background: linear-gradient(145deg, #ff9800, #f57c00);
             color: white;
-        }
-
-        .btn-pause:hover {
-            box-shadow: 0 5px 20px rgba(255, 152, 0, 0.4);
         }
 
         .btn-reset {
@@ -310,36 +311,32 @@
             color: white;
         }
 
-        .btn-reset:hover {
-            box-shadow: 0 5px 20px rgba(33, 150, 243, 0.4);
-        }
-
+        /* 閫熷害鎺у埗 */
         .speed-section {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .speed-label {
-            font-size: 12px;
+            font-size: 10px;
             color: #888;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
             text-align: center;
         }
 
         .speed-buttons {
             display: flex;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .speed-btn {
-            padding: 8px 14px;
-            font-size: 13px;
+            padding: 5px 10px;
+            font-size: 11px;
             background: rgba(100, 150, 255, 0.15);
             border: 1px solid rgba(100, 150, 255, 0.4);
             color: #7ec8e3;
-            border-radius: 15px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
         .speed-btn.active {
@@ -349,123 +346,91 @@
             font-weight: bold;
         }
 
-        .speed-btn:active {
-            transform: scale(0.95);
-        }
-
+        /* 閫夐」 */
         .options {
             display: flex;
             justify-content: center;
-            align-items: center;
             gap: 20px;
-            font-size: 13px;
+            font-size: 11px;
             color: #aaa;
         }
 
         .option-item {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             cursor: pointer;
         }
 
         .option-item input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             accent-color: #7ec8e3;
-            cursor: pointer;
         }
 
-        /* 横屏提示 */
-        .orientation-tip {
+        /* 鎻愮ず妯箙 */
+        .tip-banner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.85);
+            color: #7ec8e3;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            text-align: center;
+            z-index: 100;
+            border: 1px solid rgba(100, 150, 255, 0.3);
             display: none;
+            pointer-events: none;
+        }
+
+        .tip-banner.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 鍔犺浇鍔ㄧ敾 */
+        .loading {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 1000;
+            background: #050510;
+            z-index: 300;
+            display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            text-align: center;
-            padding: 20px;
         }
 
-        .orientation-tip .icon {
-            font-size: 60px;
-            margin-bottom: 20px;
-            animation: rotate 2s ease-in-out infinite;
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(100, 150, 255, 0.3);
+            border-top-color: #ffd700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
 
-        @keyframes rotate {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(90deg); }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        .orientation-tip p {
+        .loading-text {
             color: #7ec8e3;
-            font-size: 16px;
-            line-height: 1.6;
+            margin-top: 12px;
+            font-size: 12px;
         }
 
-        /* 分享按钮 */
-        .share-container {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            z-index: 50;
-        }
-
-        .share-btn {
-            background: linear-gradient(145deg, #07C160, #06AD56);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 13px;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(7, 193, 96, 0.4);
-            transition: all 0.3s;
-        }
-
-        .share-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(7, 193, 96, 0.5);
-        }
-
-        .share-tip {
-            position: absolute;
-            top: 45px;
-            right: 0;
-            background: rgba(255, 152, 0, 0.95);
-            color: #fff;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 13px;
-            display: none;
-            animation: bounce 1s ease infinite;
-            white-space: nowrap;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-
-        .share-tip::after {
-            content: '';
-            position: absolute;
-            top: -8px;
-            right: 30px;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-bottom: 8px solid rgba(255, 152, 0, 0.95);
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-
-        /* 二维码弹窗 */
+        /* 鍒嗕韩寮圭獥 */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -482,23 +447,23 @@
 
         .modal-content {
             background: linear-gradient(145deg, #1a1a3a, #0d0d2b);
-            padding: 25px;
-            border-radius: 15px;
+            padding: 20px;
+            border-radius: 12px;
             text-align: center;
-            max-width: 300px;
+            max-width: 280px;
             border: 1px solid rgba(100, 150, 255, 0.3);
         }
 
         .modal-title {
             color: #ffd700;
-            font-size: 18px;
-            margin-bottom: 15px;
+            font-size: 16px;
+            margin-bottom: 12px;
         }
 
         .modal-text {
             color: #aaa;
-            font-size: 13px;
-            line-height: 1.6;
+            font-size: 12px;
+            line-height: 1.5;
             margin-bottom: 15px;
         }
 
@@ -506,166 +471,97 @@
             background: linear-gradient(145deg, #7ec8e3, #5a9fd4);
             color: #0a0a1a;
             border: none;
-            padding: 10px 30px;
-            border-radius: 20px;
-            font-size: 14px;
+            padding: 8px 25px;
+            border-radius: 18px;
+            font-size: 13px;
             cursor: pointer;
             font-weight: bold;
         }
 
-        /* 加载动画 */
-        .loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #0a0a2e;
-            z-index: 300;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(100, 150, 255, 0.3);
-            border-top-color: #ffd700;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: #7ec8e3;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-
-        /* 桌面端优化 */
-        @media (min-width: 768px) {
+        /* 妯睆浼樺寲 */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .header {
+                padding: 5px 10px;
+            }
             h1 {
-                font-size: 24px;
+                font-size: 14px;
             }
             .subtitle {
-                font-size: 14px;
+                display: none;
             }
             .controls {
-                padding: 20px 30px;
+                padding: 8px 15px;
             }
-            .time-display {
-                font-size: 16px;
+            .speed-section {
+                display: none;
             }
-            .legend-toggle {
-                font-size: 14px;
-                padding: 10px 15px;
-            }
-            .legend-panel {
-                font-size: 13px;
+            .options {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 加载动画 -->
+    <!-- 鍔犺浇鍔ㄧ敾 -->
     <div class="loading" id="loading">
         <div class="loading-spinner"></div>
-        <div class="loading-text">正在加载太阳系...</div>
+        <div class="loading-text">姝ｅ湪鍔犺浇澶槼绯?..</div>
     </div>
 
     <div class="container">
-        <!-- 头部 -->
+        <!-- 澶撮儴 -->
         <div class="header">
-            <h1>🌌 交互式太阳系模型</h1>
-            <div class="subtitle">拖动时间轴 · 探索宇宙奥秘</div>
+            <h1>馃寣 浜や簰寮忓お闃崇郴妯″瀷</h1>
+            <div class="subtitle">鎷栧姩鏃堕棿杞?路 鎺㈢储瀹囧畽濂ョ</div>
         </div>
 
-        <!-- 分享 -->
+        <!-- 鍒嗕韩 -->
         <div class="share-container">
-            <button class="share-btn" id="shareBtn">📤 分享</button>
-            <div class="share-tip" id="shareTip">点击右上角菜单分享 ↗️</div>
+            <button class="share-btn" id="shareBtn">馃摛 鍒嗕韩</button>
+            <div class="share-tip" id="shareTip">鐐瑰嚮鍙充笂瑙掕彍鍗曞垎浜?鈫楋笍</div>
         </div>
 
-        <!-- 画布 -->
-        <div class="canvas-wrapper">
-            <div class="legend-toggle" id="legendToggle">📋 行星列表</div>
+        <!-- 鐢诲竷 -->
+        <div class="canvas-wrapper" id="canvasWrapper">
+            <div class="legend-toggle" id="legendToggle">馃搵 琛屾槦</div>
             <div class="legend-panel" id="legendPanel">
-                <div class="legend-item" data-planet="sun">
-                    <div class="legend-color" style="background: #ffd700; box-shadow: 0 0 8px #ffd700;"></div>
-                    <span class="legend-text">太阳 ☉</span>
-                </div>
-                <div class="legend-item" data-planet="mercury">
-                    <div class="legend-color" style="background: #8C7853;"></div>
-                    <span class="legend-text">水星 ☿</span>
-                    <span class="legend-period">88天</span>
-                </div>
-                <div class="legend-item" data-planet="venus">
-                    <div class="legend-color" style="background: #FFC649;"></div>
-                    <span class="legend-text">金星 ♀</span>
-                    <span class="legend-period">225天</span>
-                </div>
-                <div class="legend-item" data-planet="earth">
-                    <div class="legend-color" style="background: #6B93D6;"></div>
-                    <span class="legend-text">地球 ♁</span>
-                    <span class="legend-period">365天</span>
-                </div>
-                <div class="legend-item" data-planet="mars">
-                    <div class="legend-color" style="background: #C1440E;"></div>
-                    <span class="legend-text">火星 ♂</span>
-                    <span class="legend-period">687天</span>
-                </div>
-                <div class="legend-item" data-planet="jupiter">
-                    <div class="legend-color" style="background: #D8CA9D;"></div>
-                    <span class="legend-text">木星 ♃</span>
-                    <span class="legend-period">12年</span>
-                </div>
-                <div class="legend-item" data-planet="saturn">
-                    <div class="legend-color" style="background: #FAD5A5;"></div>
-                    <span class="legend-text">土星 ♄</span>
-                    <span class="legend-period">29年</span>
-                </div>
-                <div class="legend-item" data-planet="uranus">
-                    <div class="legend-color" style="background: #4FD0E7;"></div>
-                    <span class="legend-text">天王星 ♅</span>
-                    <span class="legend-period">84年</span>
-                </div>
-                <div class="legend-item" data-planet="neptune">
-                    <div class="legend-color" style="background: #4b70dd;"></div>
-                    <span class="legend-text">海王星 ♆</span>
-                    <span class="legend-period">165年</span>
-                </div>
+                <div class="legend-item"><div class="legend-color" style="background: #ffd700; box-shadow: 0 0 5px #ffd700;"></div><span class="legend-text">澶槼</span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #8C7853;"></div><span class="legend-text">姘存槦</span><span class="legend-period">88澶?/span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #FFC649;"></div><span class="legend-text">閲戞槦</span><span class="legend-period">225澶?/span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #6B93D6;"></div><span class="legend-text">鍦扮悆</span><span class="legend-period">365澶?/span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #C1440E;"></div><span class="legend-text">鐏槦</span><span class="legend-period">687澶?/span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #D8CA9D;"></div><span class="legend-text">鏈ㄦ槦</span><span class="legend-period">12骞?/span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #FAD5A5;"></div><span class="legend-text">鍦熸槦</span><span class="legend-period">29骞?/span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #4FD0E7;"></div><span class="legend-text">澶╃帇鏄?/span><span class="legend-period">84骞?/span></div>
+                <div class="legend-item"><div class="legend-color" style="background: #4b70dd;"></div><span class="legend-text">娴风帇鏄?/span><span class="legend-period">165骞?/span></div>
             </div>
             <canvas id="solarCanvas"></canvas>
+            <div class="tip-banner" id="tipBanner">妯睆浣撻獙鏇翠匠 馃摫鉃★笍</div>
         </div>
 
-        <!-- 控制面板 -->
+        <!-- 鎺у埗闈㈡澘 -->
         <div class="controls">
             <div class="time-display">
-                第 <span class="value" id="dayValue">0</span> 天 | 
-                第 <span class="value" id="yearValue">0.0</span> 年
+                绗?<span class="value" id="dayValue">0</span> 澶?| 
+                绗?<span class="value" id="yearValue">0.0</span> 骞?
             </div>
             
             <div class="slider-container">
                 <div class="slider-label">
-                    <span>⏳ 时间轴 (模拟10年)</span>
+                    <span>鈴?鏃堕棿杞?/span>
                     <span id="sliderPercent">0%</span>
                 </div>
                 <input type="range" id="timeSlider" min="0" max="3650" value="0" step="1">
             </div>
 
             <div class="button-group">
-                <button class="btn btn-play" id="playBtn">▶ 播放</button>
-                <button class="btn btn-pause" id="pauseBtn">⏸ 暂停</button>
-                <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+                <button class="btn btn-play" id="playBtn">鈻?鎾斁</button>
+                <button class="btn btn-pause" id="pauseBtn">鈴?鏆傚仠</button>
+                <button class="btn btn-reset" id="resetBtn">鈫?閲嶇疆</button>
             </div>
 
-            <div class="speed-section">
-                <div class="speed-label">⚡ 播放速度</div>
+            <div class="speed-section" id="speedSection">
+                <div class="speed-label">鈿?鎾斁閫熷害</div>
                 <div class="speed-buttons">
                     <button class="speed-btn" data-speed="0.5">0.5x</button>
                     <button class="speed-btn active" data-speed="1">1x</button>
@@ -674,111 +570,111 @@
                 </div>
             </div>
 
-            <div class="options">
+            <div class="options" id="optionsSection">
                 <label class="option-item">
                     <input type="checkbox" id="showOrbits" checked>
-                    <span>显示轨道</span>
+                    <span>鏄剧ず杞ㄩ亾</span>
                 </label>
                 <label class="option-item">
                     <input type="checkbox" id="showLabels" checked>
-                    <span>显示标签</span>
+                    <span>鏄剧ず鏍囩</span>
                 </label>
             </div>
         </div>
     </div>
 
-    <!-- 横屏提示 -->
-    <div class="orientation-tip" id="orientationTip">
-        <div class="icon">📱</div>
-        <p>建议横屏浏览以获得最佳体验<br>请将手机旋转90度</p>
-    </div>
-
-    <!-- 分享弹窗 -->
+    <!-- 鍒嗕韩寮圭獥 -->
     <div class="modal-overlay" id="shareModal">
         <div class="modal-content">
-            <div class="modal-title">🌌 分享太阳系模型</div>
+            <div class="modal-title">馃寣 鍒嗕韩澶槼绯绘ā鍨?/div>
             <div class="modal-text">
-                <p>📱 <strong>微信用户</strong>：点击右上角「···」菜单分享</p>
-                <p style="margin-top:10px">🔗 <strong>复制链接</strong>：长按下方链接复制</p>
-                <p style="margin-top:5px; color:#7ec8e3; word-break:break-all;">
-                    <span id="pageUrl"></span>
-                </p>
+                <p>馃摫 <strong>寰俊鐢ㄦ埛</strong>锛氱偣鍑诲彸涓婅銆屄仿仿枫€嶅垎浜?/p>
+                <p style="margin-top:8px">馃敆 <strong>澶嶅埗閾炬帴</strong>锛?/p>
+                <p style="margin-top:4px; color:#7ec8e3; font-size:11px; word-break:break-all;" id="pageUrl"></p>
             </div>
-            <button class="modal-close" onclick="closeModal()">知道了</button>
+            <button class="modal-close" onclick="closeModal()">鐭ラ亾浜?/button>
         </div>
     </div>
 
     <script>
-        // ============ 环境检测 ============
+        // ============ 鐜妫€娴?============
         const isWechat = /MicroMessenger/i.test(navigator.userAgent);
         const isMobile = /Mobile|Android|iPhone/i.test(navigator.userAgent);
 
-        // 微信优化
+        // 寰俊浼樺寲 - 闃绘榛樿婊氬姩琛屼负
         if (isWechat) {
             document.addEventListener('touchmove', function(e) {
-                if (e.target.tagName !== 'INPUT') e.preventDefault();
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'RANGE') {
+                    e.preventDefault();
+                }
             }, { passive: false });
-            
-            let lastTouchEnd = 0;
-            document.addEventListener('touchend', function(e) {
-                const now = Date.now();
-                if (now - lastTouchEnd <= 300) e.preventDefault();
-                lastTouchEnd = now;
-            }, false);
         }
 
-        // ============ 画布初始化 ============
+        // ============ 鐢诲竷鍒濆鍖?============
         const canvas = document.getElementById('solarCanvas');
         const ctx = canvas.getContext('2d');
+        const wrapper = document.getElementById('canvasWrapper');
         
         function resizeCanvas() {
-            const wrapper = document.querySelector('.canvas-wrapper');
-            const size = Math.min(wrapper.clientWidth, wrapper.clientHeight);
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = size * dpr;
-            canvas.height = size * dpr;
-            canvas.style.width = size + 'px';
-            canvas.style.height = size + 'px';
+            // 鑾峰彇瀹為檯鍙敤灏哄
+            const rect = wrapper.getBoundingClientRect();
+            const size = Math.min(rect.width, rect.height);
+            
+            // 澶勭悊楂樻竻灞?
+            const dpr = Math.min(window.devicePixelRatio || 1, 2); // 闄愬埗鏈€澶PR
+            
+            // 璁剧疆canvas灏哄
+            canvas.width = Math.floor(size * dpr);
+            canvas.height = Math.floor(size * dpr);
+            canvas.style.width = Math.floor(size) + 'px';
+            canvas.style.height = Math.floor(size) + 'px';
+            
+            // 閲嶇疆鍙樻崲骞剁缉鏀?
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.scale(dpr, dpr);
+            
             draw();
         }
 
-        // ============ 行星数据 ============
+        // ============ 琛屾槦鏁版嵁 ============
         const planets = [
-            { name: '水星', color: '#8C7853', radius: 3.5, orbitRadius: 45, period: 88, symbol: '☿' },
-            { name: '金星', color: '#FFC649', radius: 5, orbitRadius: 65, period: 225, symbol: '♀' },
-            { name: '地球', color: '#6B93D6', radius: 5.5, orbitRadius: 90, period: 365, symbol: '♁' },
-            { name: '火星', color: '#C1440E', radius: 4.5, orbitRadius: 120, period: 687, symbol: '♂' },
-            { name: '木星', color: '#D8CA9D', radius: 14, orbitRadius: 170, period: 4333, symbol: '♃' },
-            { name: '土星', color: '#FAD5A5', radius: 12, orbitRadius: 220, period: 10759, symbol: '♄' },
-            { name: '天王星', color: '#4FD0E7', radius: 8, orbitRadius: 265, period: 30687, symbol: '♅' },
-            { name: '海王星', color: '#4b70dd', radius: 8, orbitRadius: 305, period: 60190, symbol: '♆' }
+            { name: '姘存槦', color: '#8C7853', radius: 3, orbitRadius: 40, period: 88 },
+            { name: '閲戞槦', color: '#FFC649', radius: 4.5, orbitRadius: 58, period: 225 },
+            { name: '鍦扮悆', color: '#6B93D6', radius: 5, orbitRadius: 80, period: 365 },
+            { name: '鐏槦', color: '#C1440E', radius: 4, orbitRadius: 105, period: 687 },
+            { name: '鏈ㄦ槦', color: '#D8CA9D', radius: 12, orbitRadius: 150, period: 4333 },
+            { name: '鍦熸槦', color: '#FAD5A5', radius: 10, orbitRadius: 195, period: 10759 },
+            { name: '澶╃帇鏄?, color: '#4FD0E7', radius: 7, orbitRadius: 235, period: 30687 },
+            { name: '娴风帇鏄?, color: '#4b70dd', radius: 7, orbitRadius: 270, period: 60190 }
         ];
 
         let currentTime = 0, isPlaying = false, animationId = null;
         let speedMultiplier = 1, lastTimestamp = 0;
         const maxDays = 3650;
 
-        // ============ 绘制函数 ============
+        // ============ 缁樺埗鍑芥暟 ============
         function drawSun(cx, cy, scale) {
-            const g = ctx.createRadialGradient(cx, cy, 3, cx, cy, 30*scale);
+            const sunSize = 25 * scale;
+            
+            // 鍏夋檿
+            const g = ctx.createRadialGradient(cx, cy, 3, cx, cy, sunSize * 1.2);
             g.addColorStop(0, '#FFF8DC');
             g.addColorStop(0.2, '#FFD700');
             g.addColorStop(0.5, '#FF8C00');
-            g.addColorStop(0.8, 'rgba(255,140,0,0.3)');
             g.addColorStop(1, 'rgba(255,140,0,0)');
-            ctx.beginPath(); ctx.arc(cx, cy, 30*scale, 0, Math.PI*2);
+            ctx.beginPath(); ctx.arc(cx, cy, sunSize, 0, Math.PI*2);
             ctx.fillStyle = g; ctx.fill();
 
-            const sg = ctx.createRadialGradient(cx-3*scale, cy-3*scale, 0, cx, cy, 12*scale);
+            // 鏈綋
+            const sg = ctx.createRadialGradient(cx-2*scale, cy-2*scale, 0, cx, cy, sunSize*0.4);
             sg.addColorStop(0, '#FFFFA0'); sg.addColorStop(0.5, '#FFD700'); sg.addColorStop(1, '#FF8C00');
-            ctx.beginPath(); ctx.arc(cx, cy, 12*scale, 0, Math.PI*2);
+            ctx.beginPath(); ctx.arc(cx, cy, sunSize*0.4, 0, Math.PI*2);
             ctx.fillStyle = sg; ctx.fill();
         }
 
         function drawOrbit(cx, cy, r) {
             ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
-            ctx.strokeStyle = 'rgba(100,150,255,0.12)';
+            ctx.strokeStyle = 'rgba(100,150,255,0.1)';
             ctx.lineWidth = 1;
             ctx.stroke();
         }
@@ -786,19 +682,13 @@
         function lighten(c, p) {
             const n = parseInt(c.replace('#',''), 16);
             const a = Math.round(2.55*p);
-            const R = Math.min(255, (n>>16)+a);
-            const G = Math.min(255, ((n>>8)&0xFF)+a);
-            const B = Math.min(255, (n&0xFF)+a);
-            return '#' + (0x1000000+R*0x10000+G*0x100+B).toString(16).slice(1);
+            return '#' + (0x1000000 + Math.min(255,(n>>16)+a)*0x10000 + Math.min(255,((n>>8)&0xFF)+a)*0x100 + Math.min(255,(n&0xFF)+a)).toString(16).slice(1);
         }
 
         function darken(c, p) {
             const n = parseInt(c.replace('#',''), 16);
             const a = Math.round(2.55*p);
-            const R = Math.max(0, (n>>16)-a);
-            const G = Math.max(0, ((n>>8)&0xFF)-a);
-            const B = Math.max(0, (n&0xFF)-a);
-            return '#' + (0x1000000+R*0x10000+G*0x100+B).toString(16).slice(1);
+            return '#' + (0x1000000 + Math.max(0,(n>>16)-a)*0x10000 + Math.max(0,((n>>8)&0xFF)-a)*0x100 + Math.max(0,(n&0xFF)-a)).toString(16).slice(1);
         }
 
         function drawPlanet(p, a, cx, cy, scale) {
@@ -806,11 +696,13 @@
             const y = cy + Math.sin(a) * p.orbitRadius * scale;
             const r = p.radius * scale;
 
+            // 鍏夋檿
             const gg = ctx.createRadialGradient(x, y, 0, x, y, r*2);
             gg.addColorStop(0, p.color); gg.addColorStop(1, 'rgba(0,0,0,0)');
             ctx.beginPath(); ctx.arc(x, y, r*2, 0, Math.PI*2);
-            ctx.fillStyle = gg; ctx.globalAlpha = 0.25; ctx.fill(); ctx.globalAlpha = 1;
+            ctx.fillStyle = gg; ctx.globalAlpha = 0.2; ctx.fill(); ctx.globalAlpha = 1;
 
+            // 鏈綋
             const pg = ctx.createRadialGradient(x-r*0.3, y-r*0.3, 0, x, y, r);
             pg.addColorStop(0, lighten(p.color, 40));
             pg.addColorStop(0.5, p.color);
@@ -818,10 +710,11 @@
             ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
             ctx.fillStyle = pg; ctx.fill();
 
-            if (p.name === '土星') {
+            // 鍦熸槦鐜?
+            if (p.name === '鍦熸槦') {
                 ctx.save();
                 ctx.translate(x, y); ctx.rotate(a + Math.PI/6);
-                ctx.beginPath(); ctx.ellipse(0, 0, r*2.2, r*0.5, 0, 0, Math.PI*2);
+                ctx.beginPath(); ctx.ellipse(0, 0, r*2, r*0.5, 0, 0, Math.PI*2);
                 ctx.strokeStyle = 'rgba(200,180,140,0.5)'; ctx.lineWidth = 2; ctx.stroke();
                 ctx.restore();
             }
@@ -836,11 +729,12 @@
             }
         }
 
-        function drawStars(w, h) {
+        function drawStars(w, h, scale) {
             let r = mulberry32(12345);
-            for (let i = 0; i < 120; i++) {
+            const count = Math.floor(100 * scale);
+            for (let i = 0; i < count; i++) {
                 const x = r() * w, y = r() * h;
-                const s = r() * 1.5 + 0.3, o = r() * 0.6 + 0.2;
+                const s = r() * 1.2 + 0.3, o = r() * 0.5 + 0.2;
                 ctx.beginPath(); ctx.arc(x, y, s, 0, Math.PI*2);
                 ctx.fillStyle = `rgba(255,255,255,${o * (0.6 + 0.4*Math.sin(currentTime*0.05+i))})`;
                 ctx.fill();
@@ -848,25 +742,34 @@
         }
 
         function draw() {
-            const dpr = window.devicePixelRatio || 1;
-            const dw = canvas.width / dpr, dh = canvas.height / dpr;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const displayWidth = canvas.width / dpr;
+            const displayHeight = canvas.height / dpr;
             
-            ctx.clearRect(0, 0, dw, dh);
+            // 娓呯┖
+            ctx.fillStyle = '#050510';
+            ctx.fillRect(0, 0, displayWidth, displayHeight);
             
-            const bg = ctx.createLinearGradient(0, 0, 0, dh);
-            bg.addColorStop(0, '#050510'); bg.addColorStop(0.5, '#0a0a2e'); bg.addColorStop(1, '#050518');
-            ctx.fillStyle = bg; ctx.fillRect(0, 0, dw, dh);
+            // 鑳屾櫙娓愬彉
+            const bg = ctx.createRadialGradient(displayWidth/2, displayHeight/2, 0, displayWidth/2, displayHeight/2, displayWidth);
+            bg.addColorStop(0, '#0a0a2e'); bg.addColorStop(1, '#050510');
+            ctx.fillStyle = bg; ctx.fillRect(0, 0, displayWidth, displayHeight);
 
-            drawStars(dw, dh);
+            // 鏄熸槦
+            drawStars(displayWidth, displayHeight, Math.min(displayWidth, displayHeight) / 400);
 
-            const cx = dw / 2, cy = dh / 2;
-            const scale = Math.min(dw, dh) / 750;
+            const cx = displayWidth / 2, cy = displayHeight / 2;
+            const scale = Math.min(displayWidth, displayHeight) / 650;
 
+            // 杞ㄩ亾
             if (document.getElementById('showOrbits').checked) {
                 planets.forEach(p => drawOrbit(cx, cy, p.orbitRadius * scale));
             }
 
+            // 澶槼
             drawSun(cx, cy, scale);
+
+            // 琛屾槦
             planets.forEach(p => {
                 const a = (currentTime / p.period) * 2 * Math.PI;
                 drawPlanet(p, a, cx, cy, scale);
@@ -883,7 +786,7 @@
         function animate(ts) {
             if (!isPlaying) return;
             if (lastTimestamp) {
-                currentTime += (ts - lastTimestamp) / 1000 * 8 * speedMultiplier;
+                currentTime += (ts - lastTimestamp) / 1000 * 6 * speedMultiplier;
                 if (currentTime > maxDays) currentTime = 0;
                 timeSlider.value = currentTime;
                 updateDisplay();
@@ -893,7 +796,7 @@
             animationId = requestAnimationFrame(animate);
         }
 
-        // ============ 事件绑定 ============
+        // ============ 浜嬩欢缁戝畾 ============
         const timeSlider = document.getElementById('timeSlider');
         
         timeSlider.addEventListener('input', (e) => {
@@ -932,18 +835,15 @@
         document.getElementById('showOrbits').addEventListener('change', draw);
         document.getElementById('showLabels').addEventListener('change', draw);
 
-        // 图例
+        // 鍥句緥
         const lt = document.getElementById('legendToggle');
         const lp = document.getElementById('legendPanel');
-        lt.addEventListener('click', () => lp.classList.toggle('show'));
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.legend-toggle') && !e.target.closest('.legend-panel')) {
-                lp.classList.remove('show');
-            }
-        });
+        lt.addEventListener('click', (e) => { e.stopPropagation(); lp.classList.toggle('show'); });
+        document.addEventListener('click', () => lp.classList.remove('show'));
 
-        // 分享
-        document.getElementById('shareBtn').addEventListener('click', () => {
+        // 鍒嗕韩
+        document.getElementById('shareBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
             if (isWechat) {
                 const tip = document.getElementById('shareTip');
                 tip.style.display = 'block';
@@ -961,31 +861,35 @@
             if (e.target.id === 'shareModal') closeModal();
         });
 
-        // 横屏检测
+        // 妯睆鎻愮ず锛堜粎鏄剧ず涓€娆★級
+        let tipShown = false;
         function checkOrientation() {
-            const tip = document.getElementById('orientationTip');
-            tip.style.display = (window.innerWidth < window.innerHeight && window.innerWidth < 500) ? 'flex' : 'none';
+            const tip = document.getElementById('tipBanner');
+            if (!tipShown && window.innerWidth < window.innerHeight && window.innerWidth < 500) {
+                tip.classList.add('show');
+                tipShown = true;
+                setTimeout(() => tip.classList.remove('show'), 3000);
+            }
         }
 
-        window.addEventListener('resize', () => { resizeCanvas(); checkOrientation(); });
-        window.addEventListener('orientationchange', () => {
-            setTimeout(() => { resizeCanvas(); checkOrientation(); }, 100);
+        // 绐楀彛鍙樺寲
+        window.addEventListener('resize', () => {
+            resizeCanvas();
         });
 
-        // 页面可见性
+        // 椤甸潰鍙鎬?
         document.addEventListener('visibilitychange', () => {
             if (document.hidden && isPlaying) document.getElementById('pauseBtn').click();
         });
 
-        // 初始化
+        // 鍒濆鍖?
         window.addEventListener('load', () => {
             setTimeout(() => {
-                document.getElementById('loading').style.display = 'none';
                 resizeCanvas();
                 updateDisplay();
                 checkOrientation();
-                draw();
-            }, 500);
+                document.getElementById('loading').style.display = 'none';
+            }, 300);
         });
     </script>
 </body>
