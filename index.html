@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- SEO 优化 -->
+    <title>交互式太阳系模型 - 探索行星轨道运行的奥秘</title>
+    <meta name="description" content="免费在线交互式太阳系模拟器，拖动时间轴观察8大行星轨道运行，支持手机微信访问">
+    <meta name="keywords" content="太阳系模型,行星轨道,天文模拟,在线天文,太阳系模拟器">
+    <meta name="author" content="Solar System Explorer">
+    
+    <!-- Open Graph / 微信分享 -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="🌌 交互式太阳系模型">
+    <meta property="og:description" content="免费在线太阳系模拟器，拖动时间轴探索8大行星运行轨迹！">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1614730341194-75c607400070?w=800">
+    <meta property="og:url" content="https://你的用户名.github.io/solar-system/">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="🌌 交互式太阳系模型">
+    <meta name="twitter:description" content="免费在线太阳系模拟器">
+    
+    <!-- 主题色 -->
+    <meta name="theme-color" content="#0a0a2e">
+    <meta name="msapplication-TileColor" content="#0a0a2e">
+    
+    <!-- 预加载关键资源 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #050510 0%, #0a0a2e 50%, #050518 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+        }
+
+        .header {
+            padding: 10px 15px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 18px;
+            background: linear-gradient(90deg, #ffd700, #ff8c00, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #7ec8e3;
+            margin-top: 3px;
+            opacity: 0.8;
+        }
+
+        .canvas-wrapper {
+            flex: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5px;
+            min-height: 0;
+        }
+
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+        }
+
+        /* 行星图例 */
+        .legend-toggle {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #7ec8e3;
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            cursor: pointer;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+
+        .legend-toggle:hover {
+            background: rgba(100, 150, 255, 0.2);
+        }
+
+        .legend-panel {
+            position: absolute;
+            top: 45px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 11px;
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 10;
+            display: none;
+            max-height: 60vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .legend-panel.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 6px 0;
+            white-space: nowrap;
+            cursor: pointer;
+            padding: 3px 5px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+
+        .legend-item:hover {
+            background: rgba(100, 150, 255, 0.1);
+        }
+
+        .legend-color {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-text {
+            color: #ccc;
+        }
+
+        .legend-period {
+            color: #666;
+            font-size: 10px;
+            margin-left: auto;
+        }
+
+        /* 控制面板 */
+        .controls {
+            background: rgba(10, 10, 30, 0.95);
+            padding: 12px 15px;
+            border-top: 1px solid rgba(100, 150, 255, 0.2);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        .time-display {
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #7ec8e3;
+        }
+
+        .time-display .value {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .slider-container {
+            margin-bottom: 12px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 36px;
+            background: transparent;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #1a1a4a, #3a3a7a);
+            border-radius: 4px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #ffd700, #ff8c00);
+            margin-top: -10px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            border: 2px solid #fff;
+            transition: transform 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        input[type="range"]::-moz-range-track {
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #1a1a4a, #3a3a7a);
+            border-radius: 4px;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #ffd700, #ff8c00);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            border: 2px solid #fff;
+            cursor: pointer;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            max-width: 100px;
+            padding: 12px 15px;
+            font-size: 14px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-play {
+            background: linear-gradient(145deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-play:hover {
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-pause {
+            background: linear-gradient(145deg, #ff9800, #f57c00);
+            color: white;
+        }
+
+        .btn-pause:hover {
+            box-shadow: 0 5px 20px rgba(255, 152, 0, 0.4);
+        }
+
+        .btn-reset {
+            background: linear-gradient(145deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .btn-reset:hover {
+            box-shadow: 0 5px 20px rgba(33, 150, 243, 0.4);
+        }
+
+        .speed-section {
+            margin-bottom: 10px;
+        }
+
+        .speed-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .speed-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .speed-btn {
+            padding: 8px 14px;
+            font-size: 13px;
+            background: rgba(100, 150, 255, 0.15);
+            border: 1px solid rgba(100, 150, 255, 0.4);
+            color: #7ec8e3;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .speed-btn.active {
+            background: linear-gradient(145deg, #7ec8e3, #5a9fd4);
+            color: #0a0a1a;
+            border-color: #7ec8e3;
+            font-weight: bold;
+        }
+
+        .speed-btn:active {
+            transform: scale(0.95);
+        }
+
+        .options {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .option-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #7ec8e3;
+            cursor: pointer;
+        }
+
+        /* 横屏提示 */
+        .orientation-tip {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .orientation-tip .icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: rotate 2s ease-in-out infinite;
+        }
+
+        @keyframes rotate {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(90deg); }
+        }
+
+        .orientation-tip p {
+            color: #7ec8e3;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* 分享按钮 */
+        .share-container {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 50;
+        }
+
+        .share-btn {
+            background: linear-gradient(145deg, #07C160, #06AD56);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(7, 193, 96, 0.4);
+            transition: all 0.3s;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(7, 193, 96, 0.5);
+        }
+
+        .share-tip {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background: rgba(255, 152, 0, 0.95);
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: none;
+            animation: bounce 1s ease infinite;
+            white-space: nowrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .share-tip::after {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: 30px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid rgba(255, 152, 0, 0.95);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        /* 二维码弹窗 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #1a1a3a, #0d0d2b);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 300px;
+            border: 1px solid rgba(100, 150, 255, 0.3);
+        }
+
+        .modal-title {
+            color: #ffd700;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .modal-text {
+            color: #aaa;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .modal-close {
+            background: linear-gradient(145deg, #7ec8e3, #5a9fd4);
+            color: #0a0a1a;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* 加载动画 */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0a0a2e;
+            z-index: 300;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(100, 150, 255, 0.3);
+            border-top-color: #ffd700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #7ec8e3;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        /* 桌面端优化 */
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+            .subtitle {
+                font-size: 14px;
+            }
+            .controls {
+                padding: 20px 30px;
+            }
+            .time-display {
+                font-size: 16px;
+            }
+            .legend-toggle {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+            .legend-panel {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载动画 -->
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">正在加载太阳系...</div>
+    </div>
+
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>🌌 交互式太阳系模型</h1>
+            <div class="subtitle">拖动时间轴 · 探索宇宙奥秘</div>
+        </div>
+
+        <!-- 分享 -->
+        <div class="share-container">
+            <button class="share-btn" id="shareBtn">📤 分享</button>
+            <div class="share-tip" id="shareTip">点击右上角菜单分享 ↗️</div>
+        </div>
+
+        <!-- 画布 -->
+        <div class="canvas-wrapper">
+            <div class="legend-toggle" id="legendToggle">📋 行星列表</div>
+            <div class="legend-panel" id="legendPanel">
+                <div class="legend-item" data-planet="sun">
+                    <div class="legend-color" style="background: #ffd700; box-shadow: 0 0 8px #ffd700;"></div>
+                    <span class="legend-text">太阳 ☉</span>
+                </div>
+                <div class="legend-item" data-planet="mercury">
+                    <div class="legend-color" style="background: #8C7853;"></div>
+                    <span class="legend-text">水星 ☿</span>
+                    <span class="legend-period">88天</span>
+                </div>
+                <div class="legend-item" data-planet="venus">
+                    <div class="legend-color" style="background: #FFC649;"></div>
+                    <span class="legend-text">金星 ♀</span>
+                    <span class="legend-period">225天</span>
+                </div>
+                <div class="legend-item" data-planet="earth">
+                    <div class="legend-color" style="background: #6B93D6;"></div>
+                    <span class="legend-text">地球 ♁</span>
+                    <span class="legend-period">365天</span>
+                </div>
+                <div class="legend-item" data-planet="mars">
+                    <div class="legend-color" style="background: #C1440E;"></div>
+                    <span class="legend-text">火星 ♂</span>
+                    <span class="legend-period">687天</span>
+                </div>
+                <div class="legend-item" data-planet="jupiter">
+                    <div class="legend-color" style="background: #D8CA9D;"></div>
+                    <span class="legend-text">木星 ♃</span>
+                    <span class="legend-period">12年</span>
+                </div>
+                <div class="legend-item" data-planet="saturn">
+                    <div class="legend-color" style="background: #FAD5A5;"></div>
+                    <span class="legend-text">土星 ♄</span>
+                    <span class="legend-period">29年</span>
+                </div>
+                <div class="legend-item" data-planet="uranus">
+                    <div class="legend-color" style="background: #4FD0E7;"></div>
+                    <span class="legend-text">天王星 ♅</span>
+                    <span class="legend-period">84年</span>
+                </div>
+                <div class="legend-item" data-planet="neptune">
+                    <div class="legend-color" style="background: #4b70dd;"></div>
+                    <span class="legend-text">海王星 ♆</span>
+                    <span class="legend-period">165年</span>
+                </div>
+            </div>
+            <canvas id="solarCanvas"></canvas>
+        </div>
+
+        <!-- 控制面板 -->
+        <div class="controls">
+            <div class="time-display">
+                第 <span class="value" id="dayValue">0</span> 天 | 
+                第 <span class="value" id="yearValue">0.0</span> 年
+            </div>
+            
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>⏳ 时间轴 (模拟10年)</span>
+                    <span id="sliderPercent">0%</span>
+                </div>
+                <input type="range" id="timeSlider" min="0" max="3650" value="0" step="1">
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-play" id="playBtn">▶ 播放</button>
+                <button class="btn btn-pause" id="pauseBtn">⏸ 暂停</button>
+                <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+            </div>
+
+            <div class="speed-section">
+                <div class="speed-label">⚡ 播放速度</div>
+                <div class="speed-buttons">
+                    <button class="speed-btn" data-speed="0.5">0.5x</button>
+                    <button class="speed-btn active" data-speed="1">1x</button>
+                    <button class="speed-btn" data-speed="2">2x</button>
+                    <button class="speed-btn" data-speed="5">5x</button>
+                </div>
+            </div>
+
+            <div class="options">
+                <label class="option-item">
+                    <input type="checkbox" id="showOrbits" checked>
+                    <span>显示轨道</span>
+                </label>
+                <label class="option-item">
+                    <input type="checkbox" id="showLabels" checked>
+                    <span>显示标签</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- 横屏提示 -->
+    <div class="orientation-tip" id="orientationTip">
+        <div class="icon">📱</div>
+        <p>建议横屏浏览以获得最佳体验<br>请将手机旋转90度</p>
+    </div>
+
+    <!-- 分享弹窗 -->
+    <div class="modal-overlay" id="shareModal">
+        <div class="modal-content">
+            <div class="modal-title">🌌 分享太阳系模型</div>
+            <div class="modal-text">
+                <p>📱 <strong>微信用户</strong>：点击右上角「···」菜单分享</p>
+                <p style="margin-top:10px">🔗 <strong>复制链接</strong>：长按下方链接复制</p>
+                <p style="margin-top:5px; color:#7ec8e3; word-break:break-all;">
+                    <span id="pageUrl"></span>
+                </p>
+            </div>
+            <button class="modal-close" onclick="closeModal()">知道了</button>
+        </div>
+    </div>
+
+    <script>
+        // ============ 环境检测 ============
+        const isWechat = /MicroMessenger/i.test(navigator.userAgent);
+        const isMobile = /Mobile|Android|iPhone/i.test(navigator.userAgent);
+
+        // 微信优化
+        if (isWechat) {
+            document.addEventListener('touchmove', function(e) {
+                if (e.target.tagName !== 'INPUT') e.preventDefault();
+            }, { passive: false });
+            
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function(e) {
+                const now = Date.now();
+                if (now - lastTouchEnd <= 300) e.preventDefault();
+                lastTouchEnd = now;
+            }, false);
+        }
+
+        // ============ 画布初始化 ============
+        const canvas = document.getElementById('solarCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            const wrapper = document.querySelector('.canvas-wrapper');
+            const size = Math.min(wrapper.clientWidth, wrapper.clientHeight);
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = size * dpr;
+            canvas.height = size * dpr;
+            canvas.style.width = size + 'px';
+            canvas.style.height = size + 'px';
+            ctx.scale(dpr, dpr);
+            draw();
+        }
+
+        // ============ 行星数据 ============
+        const planets = [
+            { name: '水星', color: '#8C7853', radius: 3.5, orbitRadius: 45, period: 88, symbol: '☿' },
+            { name: '金星', color: '#FFC649', radius: 5, orbitRadius: 65, period: 225, symbol: '♀' },
+            { name: '地球', color: '#6B93D6', radius: 5.5, orbitRadius: 90, period: 365, symbol: '♁' },
+            { name: '火星', color: '#C1440E', radius: 4.5, orbitRadius: 120, period: 687, symbol: '♂' },
+            { name: '木星', color: '#D8CA9D', radius: 14, orbitRadius: 170, period: 4333, symbol: '♃' },
+            { name: '土星', color: '#FAD5A5', radius: 12, orbitRadius: 220, period: 10759, symbol: '♄' },
+            { name: '天王星', color: '#4FD0E7', radius: 8, orbitRadius: 265, period: 30687, symbol: '♅' },
+            { name: '海王星', color: '#4b70dd', radius: 8, orbitRadius: 305, period: 60190, symbol: '♆' }
+        ];
+
+        let currentTime = 0, isPlaying = false, animationId = null;
+        let speedMultiplier = 1, lastTimestamp = 0;
+        const maxDays = 3650;
+
+        // ============ 绘制函数 ============
+        function drawSun(cx, cy, scale) {
+            const g = ctx.createRadialGradient(cx, cy, 3, cx, cy, 30*scale);
+            g.addColorStop(0, '#FFF8DC');
+            g.addColorStop(0.2, '#FFD700');
+            g.addColorStop(0.5, '#FF8C00');
+            g.addColorStop(0.8, 'rgba(255,140,0,0.3)');
+            g.addColorStop(1, 'rgba(255,140,0,0)');
+            ctx.beginPath(); ctx.arc(cx, cy, 30*scale, 0, Math.PI*2);
+            ctx.fillStyle = g; ctx.fill();
+
+            const sg = ctx.createRadialGradient(cx-3*scale, cy-3*scale, 0, cx, cy, 12*scale);
+            sg.addColorStop(0, '#FFFFA0'); sg.addColorStop(0.5, '#FFD700'); sg.addColorStop(1, '#FF8C00');
+            ctx.beginPath(); ctx.arc(cx, cy, 12*scale, 0, Math.PI*2);
+            ctx.fillStyle = sg; ctx.fill();
+        }
+
+        function drawOrbit(cx, cy, r) {
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
+            ctx.strokeStyle = 'rgba(100,150,255,0.12)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+
+        function lighten(c, p) {
+            const n = parseInt(c.replace('#',''), 16);
+            const a = Math.round(2.55*p);
+            const R = Math.min(255, (n>>16)+a);
+            const G = Math.min(255, ((n>>8)&0xFF)+a);
+            const B = Math.min(255, (n&0xFF)+a);
+            return '#' + (0x1000000+R*0x10000+G*0x100+B).toString(16).slice(1);
+        }
+
+        function darken(c, p) {
+            const n = parseInt(c.replace('#',''), 16);
+            const a = Math.round(2.55*p);
+            const R = Math.max(0, (n>>16)-a);
+            const G = Math.max(0, ((n>>8)&0xFF)-a);
+            const B = Math.max(0, (n&0xFF)-a);
+            return '#' + (0x1000000+R*0x10000+G*0x100+B).toString(16).slice(1);
+        }
+
+        function drawPlanet(p, a, cx, cy, scale) {
+            const x = cx + Math.cos(a) * p.orbitRadius * scale;
+            const y = cy + Math.sin(a) * p.orbitRadius * scale;
+            const r = p.radius * scale;
+
+            const gg = ctx.createRadialGradient(x, y, 0, x, y, r*2);
+            gg.addColorStop(0, p.color); gg.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.beginPath(); ctx.arc(x, y, r*2, 0, Math.PI*2);
+            ctx.fillStyle = gg; ctx.globalAlpha = 0.25; ctx.fill(); ctx.globalAlpha = 1;
+
+            const pg = ctx.createRadialGradient(x-r*0.3, y-r*0.3, 0, x, y, r);
+            pg.addColorStop(0, lighten(p.color, 40));
+            pg.addColorStop(0.5, p.color);
+            pg.addColorStop(1, darken(p.color, 40));
+            ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
+            ctx.fillStyle = pg; ctx.fill();
+
+            if (p.name === '土星') {
+                ctx.save();
+                ctx.translate(x, y); ctx.rotate(a + Math.PI/6);
+                ctx.beginPath(); ctx.ellipse(0, 0, r*2.2, r*0.5, 0, 0, Math.PI*2);
+                ctx.strokeStyle = 'rgba(200,180,140,0.5)'; ctx.lineWidth = 2; ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        function mulberry32(a) {
+            return function() {
+                let t = a += 0x6D2B79F5;
+                t = Math.imul(t ^ (t >>> 15), t | 1);
+                t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+                return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+            }
+        }
+
+        function drawStars(w, h) {
+            let r = mulberry32(12345);
+            for (let i = 0; i < 120; i++) {
+                const x = r() * w, y = r() * h;
+                const s = r() * 1.5 + 0.3, o = r() * 0.6 + 0.2;
+                ctx.beginPath(); ctx.arc(x, y, s, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(255,255,255,${o * (0.6 + 0.4*Math.sin(currentTime*0.05+i))})`;
+                ctx.fill();
+            }
+        }
+
+        function draw() {
+            const dpr = window.devicePixelRatio || 1;
+            const dw = canvas.width / dpr, dh = canvas.height / dpr;
+            
+            ctx.clearRect(0, 0, dw, dh);
+            
+            const bg = ctx.createLinearGradient(0, 0, 0, dh);
+            bg.addColorStop(0, '#050510'); bg.addColorStop(0.5, '#0a0a2e'); bg.addColorStop(1, '#050518');
+            ctx.fillStyle = bg; ctx.fillRect(0, 0, dw, dh);
+
+            drawStars(dw, dh);
+
+            const cx = dw / 2, cy = dh / 2;
+            const scale = Math.min(dw, dh) / 750;
+
+            if (document.getElementById('showOrbits').checked) {
+                planets.forEach(p => drawOrbit(cx, cy, p.orbitRadius * scale));
+            }
+
+            drawSun(cx, cy, scale);
+            planets.forEach(p => {
+                const a = (currentTime / p.period) * 2 * Math.PI;
+                drawPlanet(p, a, cx, cy, scale);
+            });
+        }
+
+        function updateDisplay() {
+            document.getElementById('dayValue').textContent = Math.floor(currentTime);
+            document.getElementById('yearValue').textContent = (currentTime / 365.25).toFixed(1);
+            document.getElementById('sliderPercent').textContent = 
+                Math.floor((currentTime / maxDays) * 100) + '%';
+        }
+
+        function animate(ts) {
+            if (!isPlaying) return;
+            if (lastTimestamp) {
+                currentTime += (ts - lastTimestamp) / 1000 * 8 * speedMultiplier;
+                if (currentTime > maxDays) currentTime = 0;
+                timeSlider.value = currentTime;
+                updateDisplay();
+                draw();
+            }
+            lastTimestamp = ts;
+            animationId = requestAnimationFrame(animate);
+        }
+
+        // ============ 事件绑定 ============
+        const timeSlider = document.getElementById('timeSlider');
+        
+        timeSlider.addEventListener('input', (e) => {
+            currentTime = parseFloat(e.target.value);
+            updateDisplay(); draw();
+            if (isPlaying) lastTimestamp = 0;
+        });
+
+        document.getElementById('playBtn').addEventListener('click', () => {
+            if (!isPlaying) {
+                isPlaying = true; lastTimestamp = 0;
+                animationId = requestAnimationFrame(animate);
+            }
+        });
+
+        document.getElementById('pauseBtn').addEventListener('click', () => {
+            isPlaying = false; lastTimestamp = 0;
+            if (animationId) cancelAnimationFrame(animationId);
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            isPlaying = false; lastTimestamp = 0;
+            if (animationId) cancelAnimationFrame(animationId);
+            currentTime = 0; timeSlider.value = 0;
+            updateDisplay(); draw();
+        });
+
+        document.querySelectorAll('.speed-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                speedMultiplier = parseFloat(btn.dataset.speed);
+            });
+        });
+
+        document.getElementById('showOrbits').addEventListener('change', draw);
+        document.getElementById('showLabels').addEventListener('change', draw);
+
+        // 图例
+        const lt = document.getElementById('legendToggle');
+        const lp = document.getElementById('legendPanel');
+        lt.addEventListener('click', () => lp.classList.toggle('show'));
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.legend-toggle') && !e.target.closest('.legend-panel')) {
+                lp.classList.remove('show');
+            }
+        });
+
+        // 分享
+        document.getElementById('shareBtn').addEventListener('click', () => {
+            if (isWechat) {
+                const tip = document.getElementById('shareTip');
+                tip.style.display = 'block';
+                setTimeout(() => tip.style.display = 'none', 3000);
+            } else {
+                document.getElementById('pageUrl').textContent = window.location.href;
+                document.getElementById('shareModal').style.display = 'flex';
+            }
+        });
+
+        function closeModal() {
+            document.getElementById('shareModal').style.display = 'none';
+        }
+        document.getElementById('shareModal').addEventListener('click', (e) => {
+            if (e.target.id === 'shareModal') closeModal();
+        });
+
+        // 横屏检测
+        function checkOrientation() {
+            const tip = document.getElementById('orientationTip');
+            tip.style.display = (window.innerWidth < window.innerHeight && window.innerWidth < 500) ? 'flex' : 'none';
+        }
+
+        window.addEventListener('resize', () => { resizeCanvas(); checkOrientation(); });
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => { resizeCanvas(); checkOrientation(); }, 100);
+        });
+
+        // 页面可见性
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && isPlaying) document.getElementById('pauseBtn').click();
+        });
+
+        // 初始化
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                resizeCanvas();
+                updateDisplay();
+                checkOrientation();
+                draw();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
